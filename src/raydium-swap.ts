@@ -51,6 +51,8 @@ import {
   
   export class RaydiumSwap {
     static RAYDIUM_V4_PROGRAM_ID = '675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8';
+    //static RAYDIUM_V4_PROGRAM_ID = 'HWy1jotHpo6UqeQxx49dpYYdQB8wj9Qk9MdxwjLvDHB8';
+
   
     allPoolKeysJson: any[] = [];
     connection: Connection;
@@ -135,6 +137,8 @@ import {
         .flat();
   
       const pool = collectedPoolResults[0];
+      console.log(pool.volMaxCutRatio.toNumber());
+    
       if (!pool) return null;
   
       const market = await this.connection.getAccountInfo(pool.marketId).then((item) => {
@@ -145,8 +149,9 @@ import {
           programId: item.owner,
           ...MARKET_STATE_LAYOUT_V3.decode(item.data),
         };
+      
       });
-  
+      console.log(market.baseDepositsTotal.toNumber())
       const authority = Liquidity.getAssociatedAuthority({
         programId: new PublicKey(RaydiumSwap.RAYDIUM_V4_PROGRAM_ID),
       }).publicKey;
@@ -302,6 +307,7 @@ import {
             instructions: transactionInstructions,
           }).compileToV0Message()
         );
+        //console.log(await versionedTransaction.getEstimatedFee(connection))
         versionedTransaction.sign([this.wallet.payer]);
         console.log('Versioned transaction signed with payer:', this.wallet.payer.publicKey.toBase58());
         return versionedTransaction;

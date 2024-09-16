@@ -1,0 +1,3 @@
+## download the api file to fetch pool info..........
+
+wget https://api.raydium.io/v2/sdk/liquidity/mainnet.json

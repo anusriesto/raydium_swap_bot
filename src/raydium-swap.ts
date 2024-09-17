@@ -137,7 +137,8 @@ import {
         .flat();
   
       const pool = collectedPoolResults[0];
-      console.log(pool.volMaxCutRatio.toNumber());
+      console.log(pool);
+      //console.log(pool.state.toNumber());
     
       if (!pool) return null;
   

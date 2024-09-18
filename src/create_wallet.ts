@@ -3,6 +3,7 @@ import * as fs from "fs";
 import dotenv from 'dotenv';
 import https from 'https';
 import base58 from 'bs58';
+import { Wallet,web3 } from '@project-serum/anchor';
 dotenv.config();
 
 const generateKey = async (): Promise<void> => {
@@ -22,23 +23,15 @@ const generateKey = async (): Promise<void> => {
   //Getting public key
 
 const getPublicKeyFromJson = (filePath: string): PublicKey => {
-    // Read the JSON file
     const keyData = fs.readFileSync(filePath, "utf8");
   
-    // Parse the JSON data
     const parsedData = JSON.parse(keyData);
   
     if (!parsedData.secretKey) {
       throw new Error("Secret key not found in the JSON file.");
     }
-  
-    // Convert the secret key (array) to Uint8Array
     const secretKey = Uint8Array.from(parsedData.secretKey);
-  
-    // Generate the Keypair from the secret key
     const keypair = Keypair.fromSecretKey(secretKey);
-  
-    // Return the public key
     return keypair.publicKey;
 };
 
@@ -49,20 +42,20 @@ const get_balance = async (): Promise<void> => {
     if (!process.env.QUICKNODE_URL) {
         throw new Error('QUICKNODE_URL is not set in the environment variables');
       }
-    const url = new URL(process.env.QUICKNODE_URL);
+    const url = new Connection(process.env.QUICKNODE_URL);
     if (!process.env.WALLET_SECRET_KEY) {
         throw new Error('WALLET_SECRET_KEY is not provided');
       }
-      const secretKey = base58.decode(WALLET_SECRET_KEY);
-      if (secretKey.length !== 64) {
-        throw new Error('Invalid secret key length. Expected 64 bytes.');
-      }
-      this.wallet = new Wallet(Keypair.fromSecretKey(secretKey));
+    const secretKey = base58.decode(process.env.WALLET_SECRET_KEY);
+    const wallet = new Wallet(Keypair.fromSecretKey(secretKey));
+    const balance= await url.getBalance(wallet.publicKey);
+    console.log(`Wallet Balance: ${balance/LAMPORTS_PER_SOL}`);
 };
 
   
   // Example usage:
-const publicKey = getPublicKeyFromJson("secret-key.json");
-console.log("Public Key:", publicKey.toString());
+// const publicKey = getPublicKeyFromJson("secret-key.json");
+// console.log("Public Key:", publicKey.toString());
 
-generateKey();
+generateKey(); 
+get_balance();

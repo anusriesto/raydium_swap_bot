@@ -100,10 +100,10 @@ export const CONFIG = {
   RPC_URL: process.env.QUICKNODE_URL,
   WALLET_SECRET_KEY: process.env.WALLET_SECRET_KEY,
   BASE_MINT: 'So11111111111111111111111111111111111111112', // SOLANA mint address
-  //QUOTE_MINT: 'DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263', // BONK mint address
-  QUOTE_MINT:'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
-  TOKEN_A_AMOUNT: 0.0001,
-  EXECUTE_SWAP: false,
+  QUOTE_MINT: 'DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263', // BONK mint address
+  //QUOTE_MINT:'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+  TOKEN_A_AMOUNT: 0.001,
+  EXECUTE_SWAP: true,
   USE_VERSIONED_TRANSACTION: true,
   SLIPPAGE: 5,
   getPriorityFee: fetchPriorityFee,

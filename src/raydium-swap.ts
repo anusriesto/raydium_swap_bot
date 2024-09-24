@@ -9,6 +9,7 @@ import {
     TransactionInstruction,
     LAMPORTS_PER_SOL,
     SystemProgram,
+    ParsedAccountData,
     SimulatedTransactionResponse,
     TransactionConfirmationStrategy,  // Add this line
   } from '@solana/web3.js';
@@ -43,11 +44,22 @@ import {
     createAssociatedTokenAccountInstruction,
     getAssociatedTokenAddress,
     getAccount,
+    getOrCreateAssociatedTokenAccount,
   } from '@solana/spl-token';
   import { CONFIG } from './config';
 
   
   type SwapSide = "in" | "out";
+
+  type TokenMetadata = {
+    decimals: number
+    freezeAuthority: string
+    isInitialized: boolean
+    mintAuthority: string
+    supply: string
+  }
+
+  
   
   export class RaydiumSwap {
     static RAYDIUM_V4_PROGRAM_ID = '675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8';
@@ -81,8 +93,14 @@ import {
           throw new Error('Failed to create wallet: Unknown error');
         }
       }
+      const mintAddress = new PublicKey(
+        "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+      );
+      
     }
-  
+
+    
+    
     async loadPoolKeys() {
       try {
         if (existsSync('mainnet.json')) {
@@ -241,7 +259,36 @@ import {
       const swap_amount= amount - (amount * swap_fee);
       const commision_fee=amount -(amount*swap_amount_per);
 
-      const sol_ref_address=new PublicKey('BadBSFChYywEM2jRRVni7oXSrzEMMi5AtjymH6cyXceJ');// this will be the distributor account
+      const destinationWallet = new PublicKey(
+        "BadBSFChYywEM2jRRVni7oXSrzEMMi5AtjymH6cyXceJ"
+      );
+      
+      const PRIORITY_RATE = 12345; // MICRO_LAMPORTS
+      const mintAddress = new PublicKey(
+        "So11111111111111111111111111111111111111112"
+      );
+      let sourceAccount = await getOrCreateAssociatedTokenAccount(
+        this.connection,
+        this.wallet.payer,
+        mintAddress,
+        this.wallet.publicKey
+      );
+      console.log(`Source Account: ${sourceAccount.address.toString()}`);
+      const tokenInfo = await this.connection.getParsedAccountInfo(mintAddress)
+  const tokenMetadata = (tokenInfo as any)?.value?.data?.parsed
+    ?.info as unknown as TokenMetadata
+        console.log(`Token Decimals: ${tokenMetadata.decimals}`);
+      let destinationAccount = await getOrCreateAssociatedTokenAccount(
+        this.connection,
+        this.wallet.payer,
+        mintAddress,
+        destinationWallet
+      );
+      console.log(`Destination Account: ${destinationAccount.address.toString()}`);
+      console.log("----------------------------------------");
+      const transferAmountInDecimals = BigInt(Math.round(commision_fee * Math.pow(10, tokenMetadata.decimals)));
+
+      
   
       const amountIn = new TokenAmount(currencyIn, swap_amount, false);
       const slippagePercent = new Percent(slippage, 100);
@@ -285,12 +332,14 @@ import {
         // },
       });
 
-      const preInstruction=await createSendSolanaSPLTokensInstruction(
-        this.connection,
+      const transfertok = await createTransferInstruction(
+        // Those addresses are the Associated Token Accounts belonging to the sender and receiver
+        sourceAccount.address,
+        destinationAccount.address,
         this.wallet.publicKey,
-        sol_ref_address,
-        commision_fee,
-       )
+        transferAmountInDecimals
+        //commision_fee
+      );
 
       const transactionInstructions: web3.TransactionInstruction[] = []
       const recentBlockhashForSwap = await this.connection.getLatestBlockhash();
@@ -299,7 +348,7 @@ import {
       );
       
       transactionInstructions.push(...instructions);
-      transactionInstructions.push(...preInstruction);
+      transactionInstructions.push(transfertok);
       if (useVersionedTransaction) {
         const versionedTransaction = new VersionedTransaction(
           new TransactionMessage({

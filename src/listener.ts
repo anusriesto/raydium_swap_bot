@@ -1,7 +1,8 @@
 import { Connection, PublicKey, ParsedTransactionWithMeta } from "@solana/web3.js";
 
 const RAYDIUM_PUBLIC_KEY = "675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8";
-
+//const RAYDIUM_PUBLIC_KEY = "HoAb7s7jt9qvD4JhdxZpPpEL9pZjh5Gc9nM4H6beQNQq";
+ 
 const SESSION_HASH = 'QNDEMO' + Math.ceil(Math.random() * 1e9); // Random unique identifier for your session
 let credits = 0;
 
@@ -21,7 +22,7 @@ async function main(connection: Connection, programAddress: PublicKey): Promise<
         ({ logs, err, signature }) => {
             if (err) return;
 
-            if (logs && logs.some(log => log.includes("initialize2"))) {
+            if (logs && logs.some(log => log.includes("ray_log: A+APlwAAAAAAruhHvAEAAAACAAAAAAAAAOAPlwAAAAAAfx/QCwAAAACLnLNkJgAAAFG0ftIBAAAA"))) {
                 console.log("Signature for 'initialize2':", signature);
                 fetchRaydiumAccounts(signature, connection);
             }

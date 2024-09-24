@@ -123,8 +123,8 @@ swap().catch((error) => {
 
 
 // const swap_amount= 0.0001 - (0.0001 * .01);
-// const amount= 0.0001-swap_amount;
+// // const amount= 0.0001-swap_amount;
 
 // console.log(swap_amount)
-// console.log(amount)
+// // console.log(amount)
 

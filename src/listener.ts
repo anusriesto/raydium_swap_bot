@@ -16,13 +16,14 @@ const connection: Connection = new Connection(`https://cosmological-orbital-broo
 
 // Monitor logs
 async function main(connection: Connection, programAddress: PublicKey): Promise<void> {
+    const keywords = ["transfer", "SetComputeUnitPrice", "SetComputeUnitLimit","syncNative","swap"];
     console.log("Monitoring logs for program:", programAddress.toString());
     connection.onLogs(
         programAddress,
         ({ logs, err, signature }) => {
             if (err) return;
 
-            if (logs && logs.some(log => log.includes("SwapEvent"))) {
+            if (logs && logs.some(log => keywords.some(keyword => log.includes(keyword)))) {
                 console.log("Signature for 'initialize2':", signature);
                 fetchRaydiumAccounts(signature, connection);
             }
@@ -45,19 +46,18 @@ async function fetchRaydiumAccounts(txId: string, connection: Connection): Promi
     
     //const accounts = tx?.transaction.message.instructions.find(ix => ix.programId.toBase58() === RAYDIUM_PUBLIC_KEY)?.programId;
     //const accounts=tx?.transaction.message.instructions.find(ix=>ix.programId.toBase58()===)
-    const postTokenBalance=tx?.meta?.postBalances;   
-    const accounts=tx?.transaction.message.instructions;
-    if (!accounts) {
-        console.log("No accounts found in the transaction.");
-        return;
-    }
-    
-    
-    // const tokenAIndex = 8;
-    // const tokenBIndex = 9;
+    const post_balance=tx?.meta?.postTokenBalances;
 
-    // const tokenAAccount = accounts[tokenAIndex];
-    // const tokenBAccount = accounts[tokenBIndex];
+    const check =tx?.meta?.logMessages;
+    
+    
+    // const tokenAIndex = 12;
+    // const tokenBIndex = 13;
+
+    // const tokenAAccount = post_balance?.findIndex((balance)=>{
+    //     return balance.accountIndex===12
+    // });
+    // //const tokenBAccount = post_balance?.accountIndex.toString(13);
 
     // const displayData = [
     //     { "Token": "A", "Account Public Key": tokenAAccount.toBase58() },
@@ -70,8 +70,10 @@ async function fetchRaydiumAccounts(txId: string, connection: Connection): Promi
     console.log("Logged changed in the pool id");
     console.log(generateExplorerUrl(txId));
     //console.table(displayData);
-    console.log("Total QuickNode Credits Used in this session:", credits);
-    console.log(postTokenBalance)
+    console.log("Total QuickNode Credits Used in this session:", credits)
+    //console.log(check)
+    console.log(post_balance)
+
 }
 
 function generateExplorerUrl(txId: string): string {

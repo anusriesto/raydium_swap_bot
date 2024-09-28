@@ -22,7 +22,7 @@ async function getTokenBalance(raydiumSwap: RaydiumSwap, mint: string): Promise<
 async function swap() {
   console.log('Starting swap process...');
   const raydiumSwap = new RaydiumSwap(CONFIG.RPC_URL, CONFIG.WALLET_SECRET_KEY);
-
+  await raydiumSwap.createWrappedSolAccountInstruction(0.001);
   await raydiumSwap.loadPoolKeys();
   let poolInfo = raydiumSwap.findPoolInfoForTokens(CONFIG.BASE_MINT, CONFIG.QUOTE_MINT) 
     || await raydiumSwap.findRaydiumPoolInfo(CONFIG.BASE_MINT, CONFIG.QUOTE_MINT);
@@ -30,7 +30,7 @@ async function swap() {
   if (!poolInfo) {
     throw new Error("Couldn't find the pool info");
   }
-
+  
   await raydiumSwap.createWrappedSolAccountInstruction(CONFIG.TOKEN_A_AMOUNT);
 
   console.log('Fetching current priority fee...');
@@ -70,6 +70,7 @@ async function swap() {
         if (!(swapTx instanceof Transaction)) {
           throw new Error('Expected a Transaction but received a different type');
         }
+
         txid = await raydiumSwap.sendLegacyTransaction(swapTx);
       }
       console.log(`Transaction sent, signature: ${txid}`);

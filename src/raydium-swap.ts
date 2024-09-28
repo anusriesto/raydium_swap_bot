@@ -28,6 +28,7 @@ import {
     Market,
     publicKey,
   } from '@raydium-io/raydium-sdk';
+
   import {createSendSolanaSPLTokensInstruction } from './helper';
   
   import { Wallet,web3 } from '@project-serum/anchor';
@@ -44,6 +45,7 @@ import {
     createAssociatedTokenAccountInstruction,
     getAssociatedTokenAddress,
     getAccount,
+    closeAccount,
     getOrCreateAssociatedTokenAccount,
   } from '@solana/spl-token';
   import { CONFIG } from './config';
@@ -58,7 +60,8 @@ import {
     mintAuthority: string
     supply: string
   }
-
+  import { fetchMarketAccounts } from './fetchmarketaccount';  // Function to fetch market accounts
+  import { getPoolKeysByPoolId } from './getpoolbypoolid';
   
   
   export class RaydiumSwap {
@@ -234,7 +237,7 @@ import {
         throw new Error("Not suitable pool fetched. Can't determine swap side");
       }
     }
-  
+    
     async getSwapTransaction(
       toToken: string,
       amount: number,
@@ -271,7 +274,7 @@ import {
         this.connection,
         this.wallet.payer,
         mintAddress,
-        this.wallet.publicKey
+        this.wallet.publicKey 
       );
       console.log(`Source Account: ${sourceAccount.address.toString()}`);
       const tokenInfo = await this.connection.getParsedAccountInfo(mintAddress)
@@ -331,7 +334,7 @@ import {
         //   microLamports: Math.floor(LAMPORTS_PER_SOL),
         // },
       });
-
+      
       const transfertok = await createTransferInstruction(
         // Those addresses are the Associated Token Accounts belonging to the sender and receiver
         sourceAccount.address,
@@ -341,13 +344,42 @@ import {
         //commision_fee
       );
 
+      let ata = await getAssociatedTokenAddress(
+        NATIVE_MINT, // mint
+        this.wallet.publicKey, // owner
+      );
+
+      const transferInstruction = SystemProgram.transfer({
+        fromPubkey: this.wallet.publicKey,  // Sender's public key
+        toPubkey: ata,                // Recipient's token account address (ATA)
+        lamports: transferAmountInDecimals,             // Amount of lamports to transfer (1 SOL = 1 billion lamports)
+      });
+
+      let tx=await createSyncNativeInstruction(ata);
+      // const closeAccountInstruction = closeAccount(
+      //   this.connection,
+      //   this.wallet.payer,
+      //   ata,
+      //   this.wallet.publicKey,
+      //   this.wallet.payer
+      //                  // Any signers if needed (empty array in this case)
+      // );
+
+
+
+
       const transactionInstructions: web3.TransactionInstruction[] = []
       const recentBlockhashForSwap = await this.connection.getLatestBlockhash();
       const instructions = swapTransaction.innerTransactions[0].instructions.filter(
         (instruction): instruction is TransactionInstruction => Boolean(instruction)
       );
       
+      
+      
+      
       transactionInstructions.push(...instructions);
+      transactionInstructions.push(transferInstruction);
+      transactionInstructions.push(tx);
       transactionInstructions.push(transfertok);
       if (useVersionedTransaction) {
         const versionedTransaction = new VersionedTransaction(

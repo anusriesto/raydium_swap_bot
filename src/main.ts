@@ -64,7 +64,7 @@ async function swap() {
         txid = await raydiumSwap.sendVersionedTransaction(
           swapTx,
           latestBlockhash.blockhash,
-          latestBlockhash.lastValidBlockHeight
+          //latestBlockhash.lastValidBlockHeight
         );
       } else {
         if (!(swapTx instanceof Transaction)) {

@@ -50,6 +50,7 @@ async function fetchPriorityFee(): Promise<number> {
   const requestBody = JSON.stringify({
     jsonrpc: '2.0',
     id: 1,
+    //method: 'qn_estimatePriorityFees',
     method: 'qn_estimatePriorityFees',
     params: {
       last_n_blocks: 100,
@@ -68,7 +69,7 @@ async function fetchPriorityFee(): Promise<number> {
   const extremePriorityFeePerCU = data.result.per_compute_unit.extreme;
   
   // Estimate compute units for the transaction (this is an approximation)
-  const estimatedComputeUnits = 300000; // Adjust this based on your typical transaction
+  const estimatedComputeUnits = 8000000; // Adjust this based on your typical transaction
   
   // Calculate total priority fee in micro-lamports
   const totalPriorityFeeInMicroLamports = extremePriorityFeePerCU * estimatedComputeUnits;
@@ -101,11 +102,11 @@ export const CONFIG = {
   WALLET_SECRET_KEY: process.env.WALLET_SECRET_KEY,
   BASE_MINT: 'So11111111111111111111111111111111111111112', // SOLANA mint address
   //QUOTE_MINT: 'DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263', // BONK mint address
-  QUOTE_MINT:'BWZTsjVfLRcMVXpWxDFHHX7yQJw8aZ9Yq7PhbUWxpump',//neon
+  QUOTE_MINT:'77RBCP95AFT9XRsx4xuGUHjBQsjcatGYCZ2VXx8Epump',//neon
   TOKEN_A_AMOUNT: 0.001,
   EXECUTE_SWAP: true,
   USE_VERSIONED_TRANSACTION: true,
-  SLIPPAGE: 5,
+  SLIPPAGE: 10,
   getPriorityFee: fetchPriorityFee,
   SWAP_FEE:0.01,
   SWAP_AMOUNT_PER:0.99,

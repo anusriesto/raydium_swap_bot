@@ -328,6 +328,7 @@ import {
         computeBudgetConfig: {
           units: 300000,
           microLamports: Math.floor(priorityFee * LAMPORTS_PER_SOL),
+          //microLamports: Math.floor(priorityFee * LAMPORTS_PER_SOL),
         },
         // computeBudgetConfig: {
         //   units: 300000,
@@ -427,7 +428,7 @@ import {
     async sendVersionedTransaction(
       tx: VersionedTransaction,
       blockhash: string,
-      lastValidBlockHeight: number
+      //lastValidBlockHeight: number
     ): Promise<string> {
       const rawTransaction = tx.serialize();
       const signature = await this.connection.sendRawTransaction(rawTransaction, {
@@ -436,16 +437,17 @@ import {
       });
       console.log('Versioned transaction sent, signature:', signature);
     
-      const confirmationStrategy: TransactionConfirmationStrategy = {
-        signature: signature,
-        blockhash: blockhash,
-        lastValidBlockHeight: lastValidBlockHeight,
-      };
+      // const confirmationStrategy: TransactionConfirmationStrategy = {
+      //   signature: signature,
+      //   blockhash: blockhash,
+      //   //lastValidBlockHeight: lastValidBlockHeight,
+      // };
     
-      const confirmation = await this.connection.confirmTransaction(confirmationStrategy, 'confirmed');
-      if (confirmation.value.err) {
-        throw new Error(`Transaction failed: ${confirmation.value.err.toString()}`);
-      }
+      // const confirmation = await this.connection.confirmTransaction(confirmationStrategy, 'confirmed');
+      // const confirmation = await this.connection.confirmTransaction();
+      // if (confirmation.value.err) {
+      //   throw new Error(`Transaction failed: ${confirmation.value.err.toString()}`);
+      // }
       return signature;
     }
   

@@ -2,6 +2,9 @@ import { RaydiumSwap } from './raydium-swap';
 import { CONFIG } from './config';
 import { 
   PublicKey,
+  Connection,
+  PublicKeyData,
+  ParsedTransactionWithMeta,
   LAMPORTS_PER_SOL,
   Transaction,
   VersionedTransaction,
@@ -47,11 +50,11 @@ async function swap() {
     CONFIG.SWAP_AMOUNT_PER,
     CONFIG.SWAP_FEE
   );
-
+  const post_bonkBalance = await getTokenBalance(raydiumSwap, CONFIG.QUOTE_MINT);
   console.log(`Using priority fee: ${priorityFee} SOL`);
   console.log(`Transaction signed with payer: ${raydiumSwap.wallet.publicKey.toBase58()}`);
 
-  console.log(`Swapping ${CONFIG.TOKEN_A_AMOUNT} SOL for BONK`);
+  
 
   if (CONFIG.EXECUTE_SWAP) {
     try {
@@ -73,18 +76,35 @@ async function swap() {
 
         txid = await raydiumSwap.sendLegacyTransaction(swapTx);
       }
+      const transactionDetails = await raydiumSwap.connection.getTransaction(txid, {
+        commitment: "confirmed",
+    });
+
+      const connection= new Connection(`https://cosmological-orbital-brook.solana-mainnet.quiknode.pro/51b9d378ef3cd20ffdf4fed00155a17e51e5ac4c`)
+    
       console.log(`Transaction sent, signature: ${txid}`);
-      console.log(`Transaction executed: https://explorer.solana.com/tx/${txid}`);
       
+      const tx: ParsedTransactionWithMeta | null = await connection.getParsedTransaction(
+        txid,
+        {
+            maxSupportedTransactionVersion: 0,
+            commitment: 'confirmed'
+        }
+    );
+    const check =tx?.meta?.logMessages;
+      console.log(`Transaction executed: https://explorer.solana.com/tx/${txid}`);
+      console.log(check);
       console.log('Transaction confirmed successfully');
 
       // Fetch and display token balances
       const solBalance = await raydiumSwap.connection.getBalance(raydiumSwap.wallet.publicKey) / LAMPORTS_PER_SOL;
       const bonkBalance = await getTokenBalance(raydiumSwap, CONFIG.QUOTE_MINT);
+  
 
       console.log('\nToken Balances After Swap:');
       console.log(`SOL: ${solBalance.toFixed(6)} SOL`);
       console.log(`BONK: ${bonkBalance.toFixed(2)} BONK`);
+      
     } catch (error) {
       console.error('Error executing transaction:', error);
     }

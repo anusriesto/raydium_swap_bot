@@ -157,7 +157,13 @@ import {
         }))
         .flat();
   
-      const pool = collectedPoolResults[0];
+      //const pool = collectedPoolResults[0];
+      const pool = collectedPoolResults.reduce((prev, current) => {
+        const currentLpDecimals = Number.parseInt(current.lpReserve.toString());
+        return currentLpDecimals < (prev? Number.parseInt(prev.lpReserve.toString()):0) 
+            ? prev 
+            : current;
+    });
       console.log(pool);
       //console.log(pool.state.toNumber());
     
@@ -308,6 +314,14 @@ import {
   
       const priorityFee = await CONFIG.getPriorityFee();
       console.log(`Using priority fee: ${priorityFee} SOL`);
+      console.log("Minimum amount out after the swap: ",JSON.stringify(minAmountOut, null, 2));
+      const numerator = parseInt(minAmountOut.numerator, 16);   // hex to decimal
+      const denominator = parseInt(minAmountOut.denominator, 16);
+
+// Adjust by the token's decimals (6 decimals in this case)
+     const amountOut_che = (numerator );
+
+console.log(`Minimum amount out after the swap: ${amountOut_che}`);
   
       const swapTransaction = await Liquidity.makeSwapInstructionSimple({
         connection: this.connection,
@@ -335,6 +349,7 @@ import {
         //   microLamports: Math.floor(LAMPORTS_PER_SOL),
         // },
       });
+      
       
       const transfertok = await createTransferInstruction(
         // Those addresses are the Associated Token Accounts belonging to the sender and receiver
@@ -434,8 +449,12 @@ import {
       const signature = await this.connection.sendRawTransaction(rawTransaction, {
         skipPreflight: true,
         preflightCommitment: 'confirmed',
+  
       });
       console.log('Versioned transaction sent, signature:', signature);
+      
+      
+
     
       // const confirmationStrategy: TransactionConfirmationStrategy = {
       //   signature: signature,

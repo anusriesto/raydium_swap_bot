@@ -76,25 +76,21 @@ async function swap() {
 
         txid = await raydiumSwap.sendLegacyTransaction(swapTx);
       }
-      const transactionDetails = await raydiumSwap.connection.getTransaction(txid, {
-        commitment: "confirmed",
-    });
 
-      const connection= new Connection(`https://cosmological-orbital-brook.solana-mainnet.quiknode.pro/51b9d378ef3cd20ffdf4fed00155a17e51e5ac4c`)
-    
-      console.log(`Transaction sent, signature: ${txid}`);
+
       
-      const tx: ParsedTransactionWithMeta | null = await connection.getParsedTransaction(
-        txid,
-        {
-            maxSupportedTransactionVersion: 0,
-            commitment: 'confirmed'
-        }
-    );
-    const check =tx?.meta?.logMessages;
-      console.log(`Transaction executed: https://explorer.solana.com/tx/${txid}`);
-      console.log(check);
-      console.log('Transaction confirmed successfully');
+      const confirmation = await raydiumSwap.connection.confirmTransaction(txid, 'confirmed');
+
+      // Check the confirmation status
+      if (confirmation.value.err) {
+        //console.error('Transaction failed:', confirmation.value.err);
+        console.error('Transaction failed:', confirmation.value.err);
+        throw new Error(`Transaction failed with error: ${JSON.stringify(confirmation.value.err)}`);
+      } else {
+        console.log('Transaction confirmed successfully');
+        console.log(`Transaction executed: https://explorer.solana.com/tx/${txid}`);
+      }
+
 
       // Fetch and display token balances
       const solBalance = await raydiumSwap.connection.getBalance(raydiumSwap.wallet.publicKey) / LAMPORTS_PER_SOL;

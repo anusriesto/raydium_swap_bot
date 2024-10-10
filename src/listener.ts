@@ -1,7 +1,7 @@
 import { Connection, PublicKey, ParsedTransactionWithMeta } from "@solana/web3.js";
 
 //const RAYDIUM_PUBLIC_KEY = "675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8";
-const RAYDIUM_PUBLIC_KEY = "22WrmyTj8x2TRVQen3fxxi2r4Rn6JDHWoMTpsSmn8RUd";
+const RAYDIUM_PUBLIC_KEY = "FRhB8L7Y9Qq41qZXYLtC2nw8An1RJfLLxRF2x9RwLLMo";
  
 const SESSION_HASH = 'QNDEMO' + Math.ceil(Math.random() * 1e9); // Random unique identifier for your session
 let credits = 0;
@@ -16,17 +16,17 @@ const connection: Connection = new Connection(`https://cosmological-orbital-broo
 
 // Monitor logs
 async function main(connection: Connection, programAddress: PublicKey): Promise<void> {
-    const keywords = ["transfer", "SetComputeUnitPrice", "SetComputeUnitLimit","syncNative","swap"];
+    const keywords = ["Transfer", "SetComputeUnitPrice", "SetComputeUnitLimit","syncNative","swap","ray_log: AyMAAAAAAAAAZA8AAAAAAAABAAAAAAAAACMAAAAAAAAAgTzUKJplFgDKZNAeGy8AAKQQAAAAAAAA"];
     console.log("Monitoring logs for program:", programAddress.toString());
     connection.onLogs(
         programAddress,
         ({ logs, err, signature }) => {
             if (err) return;
 
-            if (logs && logs.some(log => keywords.some(keyword => log.includes(keyword)))) {
+            //if (logs && logs.some(log => keywords.some(keyword => log.includes(keyword)))) {
                 console.log("Signature for 'initialize2':", signature);
                 fetchRaydiumAccounts(signature, connection);
-            }
+            //}
         },
         "finalized"
     );

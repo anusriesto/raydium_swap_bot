@@ -47,5 +47,5 @@ async function fetchammountofswap(txId: string, connection: Connection): Promise
 }
 
 // Example: Call this function with a known signature to get transaction details
-const txSignature = '4j8LMFoHkkfAaDHZueQh4x7iaEuKQfmG3koXXVztpTfcLBUCnfF7jrkJ8JjT2E1DtFpZdwVzPJz8Jos3P5ymfzQW'; // Replace with a real transaction signature
+const txSignature = 'qguDCEDE3mXyuqZ73NUKrqMey9qQzE5tfGipjnghLPVZb8daFAYw17wfN9dPStQ1nxnWrkd3mQL5uLi7tWpp4VZ'; // Replace with a real transaction signature
 fetchammountofswap(txSignature, connection).catch(console.error);

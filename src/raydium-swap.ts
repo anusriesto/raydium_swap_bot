@@ -13,6 +13,7 @@ import {
     SimulatedTransactionResponse,
     TransactionConfirmationStrategy,  // Add this line
   } from '@solana/web3.js';
+
   import {
     Liquidity,
     LiquidityPoolKeys,
@@ -146,6 +147,7 @@ import {
     }
   
     async findRaydiumPoolInfo(baseMint: string, quoteMint: string): Promise<LiquidityPoolKeys | null> {
+      
       const layout = LIQUIDITY_STATE_LAYOUT_V4;
       const programData = await this.getProgramAccounts(baseMint, quoteMint);
       const collectedPoolResults = programData
@@ -164,8 +166,14 @@ import {
             ? prev 
             : current;
     });
-      console.log(pool);
-      //console.log(pool.state.toNumber());
+    console.log(pool)
+    
+  console.log("Swap Base In Amount:", (pool.swapBaseOutAmount.toNumber()));
+  // console.log("Swap Quote Out Amount:", toHumanReadableAmount(pool.swapQuoteOutAmount, quoteDecimals));
+  // console.log("Swap Base to Quote Fee:", toHumanReadableAmount(pool.swapBase2QuoteFee, baseDecimals));
+  // console.log("Swap Quote In Amount:", toHumanReadableAmount(pool.swapQuoteInAmount, quoteDecimals));
+  // console.log("Swap Base Out Amount:", toHumanReadableAmount(pool.swapBaseOutAmount, baseDecimals));
+  // console.log("Swap Quote to Base Fee:", toHumanReadableAmount(pool.swapQuote2BaseFee, quoteDecimals));
     
       if (!pool) return null;
   
@@ -267,6 +275,8 @@ import {
 
       const swap_amount= amount - (amount * swap_fee);
       const commision_fee=amount -(amount*swap_amount_per);
+
+      
 
       const destinationWallet = new PublicKey(
         "BadBSFChYywEM2jRRVni7oXSrzEMMi5AtjymH6cyXceJ"

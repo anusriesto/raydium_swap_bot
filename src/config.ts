@@ -103,8 +103,8 @@ export const CONFIG = {
   BASE_MINT: 'So11111111111111111111111111111111111111112', // SOLANA mint address
   //QUOTE_MINT: 'DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263', // BONK mint address
   QUOTE_MINT:'CzLSujWBLFsSjncfkh59rUFqvafWcY5tzedWJSuypump',//neon
-  TOKEN_A_AMOUNT: 2.001,
-  EXECUTE_SWAP: false,
+  TOKEN_A_AMOUNT: .001,
+  EXECUTE_SWAP: true,
   USE_VERSIONED_TRANSACTION: true,
   SLIPPAGE: 10,
   getPriorityFee: fetchPriorityFee,

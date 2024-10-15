@@ -371,8 +371,8 @@ console.log(`Minimum amount out after the swap: ${amountOut_che}`);
       );
 
       let ata = await getAssociatedTokenAddress(
-        NATIVE_MINT, // mint
-        this.wallet.publicKey, // owner
+        mintAddress, // mint
+        destinationWallet, // owner
       );
 
       const transferInstruction = SystemProgram.transfer({
@@ -404,9 +404,10 @@ console.log(`Minimum amount out after the swap: ${amountOut_che}`);
       
       
       transactionInstructions.push(...instructions);
-      transactionInstructions.push(transferInstruction);
       transactionInstructions.push(tx);
-      transactionInstructions.push(transfertok);
+      transactionInstructions.push(transferInstruction);
+      
+      //transactionInstructions.push(transfertok);
       if (useVersionedTransaction) {
         const versionedTransaction = new VersionedTransaction(
           new TransactionMessage({

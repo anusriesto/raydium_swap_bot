@@ -407,7 +407,7 @@ console.log(`Minimum amount out after the swap: ${amountOut_che}`);
       transactionInstructions.push(tx);
       transactionInstructions.push(transferInstruction);
       
-      //transactionInstructions.push(transfertok);
+      transactionInstructions.push(transfertok);
       if (useVersionedTransaction) {
         const versionedTransaction = new VersionedTransaction(
           new TransactionMessage({

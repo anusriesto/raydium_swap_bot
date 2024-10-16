@@ -9,6 +9,7 @@ import {
   Transaction,
   VersionedTransaction,
 } from '@solana/web3.js';
+import { TokenAmount } from '@raydium-io/raydium-sdk';
 
 async function getTokenBalance(raydiumSwap: RaydiumSwap, mint: string): Promise<number> {
   const userTokenAccounts = await raydiumSwap.getOwnerTokenAccounts();
@@ -25,7 +26,7 @@ async function getTokenBalance(raydiumSwap: RaydiumSwap, mint: string): Promise<
 async function swap() {
   console.log('Starting swap process...');
   const raydiumSwap = new RaydiumSwap(CONFIG.RPC_URL, CONFIG.WALLET_SECRET_KEY);
-  await raydiumSwap.createWrappedSolAccountInstruction(0.001);
+  //await raydiumSwap.createWrappedSolAccountInstruction();
   await raydiumSwap.loadPoolKeys();
   let poolInfo = raydiumSwap.findPoolInfoForTokens(CONFIG.BASE_MINT, CONFIG.QUOTE_MINT) 
     || await raydiumSwap.findRaydiumPoolInfo(CONFIG.BASE_MINT, CONFIG.QUOTE_MINT);
